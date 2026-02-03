@@ -152,6 +152,17 @@ public class KickoutController {
         return SaResult.ok("账号 " + userId + " 在 [" + device + "] 端已被顶下线");
     }
 
+    /**
+     * 将指定 Token 顶下线
+     *
+     * 测试：curl http://localhost:8081/api/kickout/replaced/token?token=xxxx-xxxx-xxxx
+     */
+    @GetMapping("/replaced/token")
+    public SaResult replacedByToken(@RequestParam String token) {
+        StpUtil.replacedByTokenValue(token);
+        return SaResult.ok("Token [" + token + "] 已被顶下线");
+    }
+
     // =====================================================================
     //  实战场景演示
     // =====================================================================
