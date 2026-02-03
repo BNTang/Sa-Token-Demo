@@ -10,9 +10,9 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>sa-token-demo-springboot</artifactId>
-    <name>sa-token-demo-springboot</name>
-    <description>Sa-Token 基础功能演示</description>
+    <artifactId>sa-token-demo-kickout</artifactId>
+    <name>sa-token-demo-kickout</name>
+    <description>用户投诉账号异常登录，CTO 让我 5 分钟内解决 - 踢人下线功能演示</description>
 
     <dependencies>
         <!-- SpringBoot Web模块 -->
