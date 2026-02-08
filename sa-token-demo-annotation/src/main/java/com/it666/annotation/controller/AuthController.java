@@ -1,6 +1,6 @@
 package com.it666.annotation.controller;
 
-import cn.dev33.satoken.secure.BCrypt;
+import org.mindrot.jbcrypt.BCrypt;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +20,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+
+    private static final String PERMISSION_LIST_KEY = "permissionList";
 
     /**
      * 登录接口
@@ -48,7 +50,7 @@ public class AuthController {
         permissionList.add("user.delete");
         permissionList.add("user.all");
         permissionList.add("system.config");
-        StpUtil.getSession().set("permissionList", permissionList);
+        StpUtil.getSession().set(PERMISSION_LIST_KEY, permissionList);
         return SaResult.data("管理员登录成功，Token：" + StpUtil.getTokenValue());
     }
 
@@ -64,7 +66,7 @@ public class AuthController {
         List<String> permissionList = new ArrayList<>();
         permissionList.add("user.add");
         permissionList.add("user.update");
-        StpUtil.getSession().set("permissionList", permissionList);
+        StpUtil.getSession().set(PERMISSION_LIST_KEY, permissionList);
         return SaResult.data("普通用户登录成功，Token：" + StpUtil.getTokenValue());
     }
 
@@ -79,7 +81,7 @@ public class AuthController {
         // 设置所有权限
         List<String> permissionList = new ArrayList<>();
         permissionList.add("*");
-        StpUtil.getSession().set("permissionList", permissionList);
+        StpUtil.getSession().set(PERMISSION_LIST_KEY, permissionList);
         return SaResult.data("超级管理员登录成功，Token：" + StpUtil.getTokenValue());
     }
 
@@ -95,7 +97,7 @@ public class AuthController {
                 .set("loginId", StpUtil.getLoginIdAsString())
                 .set("token", StpUtil.getTokenValue())
                 .set("role", StpUtil.getSession().get("role"))
-                .set("permissions", StpUtil.getSession().get("permissionList"));
+                .set("permissions", StpUtil.getSession().get(PERMISSION_LIST_KEY));
     }
 
     /**
@@ -114,8 +116,7 @@ public class AuthController {
      * 场景：在修改密码等敏感操作前，需要先调用此接口进行二次验证
      */
     @RequestMapping("/openSafe")
-    public SaResult openSafe(@RequestParam(defaultValue = "123456") String password) {
-        // 实际项目应该验证密码
+    public SaResult openSafe() {
         StpUtil.openSafe(3600);
         return SaResult.data("二级认证通过，现在可以进行敏感操作了");
     }
@@ -176,7 +177,7 @@ public class AuthController {
     /**
      * 演示 BCrypt 密码加密
      * <p>
-     * Sa-Token 内置了 BCrypt 加密工具
+     * 使用 jBCrypt 库进行 BCrypt 加密
      */
     @RequestMapping("/encrypt")
     public SaResult encrypt(@RequestParam String password) {

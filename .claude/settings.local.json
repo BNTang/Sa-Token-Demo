@@ -4,7 +4,8 @@
       "Bash(dir:*)",
       "Bash(xargs:*)",
       "Bash(./.trellis/scripts/get-context.sh:*)",
-      "Bash(./.trellis/scripts/init-developer.sh:*)"
+      "Bash(./.trellis/scripts/init-developer.sh:*)",
+      "WebSearch"
     ]
   }
 }
