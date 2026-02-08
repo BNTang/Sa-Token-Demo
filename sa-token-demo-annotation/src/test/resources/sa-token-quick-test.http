@@ -1,0 +1,116 @@
+### ============================================
+### Sa-Token 快速测试 - 手动复制 Token 版本
+### ============================================
+
+### ==========================================
+### 第一步：登录获取 Token
+### ==========================================
+
+### 1. 普通用户登录
+GET http://localhost:8083/auth/login?username=neo
+
+### 2. 管理员登录（推荐用于测试）
+GET http://localhost:8083/auth/loginAdmin
+
+### 3. 普通用户登录（部分权限）
+GET http://localhost:8083/auth/loginUser
+
+### 4. 超级管理员登录
+GET http://localhost:8083/auth/loginSuperAdmin
+
+### ==========================================
+### 第二步：复制上面的 Token 到下面的请求中
+### ==========================================
+
+### 获取用户信息（需要登录）
+GET http://localhost:8083/auth/getInfo
+satoken: PASTE_TOKEN_HERE
+
+### 开启二级认证
+GET http://localhost:8083/auth/openSafe
+satoken: PASTE_TOKEN_HERE
+
+### 检查二级认证状态
+GET http://localhost:8083/auth/checkSafe
+
+### 关闭二级认证
+GET http://localhost:8083/auth/closeSafe
+satoken: PASTE_TOKEN_HERE
+
+### ==========================================
+### 第三步：权限测试
+### ==========================================
+
+### 获取个人信息（需要登录）
+GET http://localhost:8083/basic/info
+satoken: PASTE_TOKEN_HERE
+
+### 用户添加（需要 user-add 权限）
+GET http://localhost:8083/basic/userAdd
+satoken: PASTE_TOKEN_HERE
+
+### 超级管理员专属接口（需要 super-admin 角色）
+### ⚠️ 必须使用 loginSuperAdmin 的 Token
+GET http://localhost:8083/basic/add
+satoken: PASTE_TOKEN_HERE
+
+### 修改密码（需要先开启二级认证）
+GET http://localhost:8083/basic/updatePwd
+satoken: PASTE_TOKEN_HERE
+
+### ==========================================
+### 第四步：组合注解测试
+### ==========================================
+
+### 健康检查（白名单，无需登录）
+GET http://localhost:8083/combined/health
+
+### 正常接口（需要登录）
+GET http://localhost:8083/combined/normal
+satoken: PASTE_TOKEN_HERE
+
+### 管理员专属（需要登录 + admin 角色）
+GET http://localhost:8083/combined/adminOnly
+satoken: PASTE_TOKEN_HERE
+
+### ==========================================
+### 第五步：服务封禁测试
+### ==========================================
+
+### 封禁服务（永久封禁）
+GET http://localhost:8083/auth/disableService?service=comment
+satoken: PASTE_TOKEN_HERE
+
+### 检查服务封禁状态
+GET http://localhost:8083/auth/checkDisable?service=comment
+satoken: PASTE_TOKEN_HERE
+
+### 解封服务
+GET http://localhost:8083/auth/untieDisableService?service=comment
+satoken: PASTE_TOKEN_HERE
+
+### 发表评论（如果 comment 服务被封禁则无法访问）
+GET http://localhost:8083/basic/send
+satoken: PASTE_TOKEN_HERE
+
+### ==========================================
+### 第六步：密码加密测试
+### ==========================================
+
+### BCrypt 加密
+GET http://localhost:8083/auth/encrypt?password=123456
+
+### BCrypt 验证
+GET http://localhost:8083/auth/verify?password=123456&hashed=$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
+
+### ==========================================
+### 使用说明
+### ==========================================
+# 1. 先运行第一步的某个登录请求（推荐：loginAdmin）
+# 2. 复制响应中的 token 值（例如：xxx-xxx-xxx）
+# 3. 替换下面请求中的 PASTE_TOKEN_HERE
+# 4. 点击运行按钮测试各个接口
+#
+# 示例：
+# 登录响应：{"code":200,"data":"登录成功，Token：abc-123-xyz"}
+# 将 PASTE_TOKEN_HERE 替换为：abc-123-xyz

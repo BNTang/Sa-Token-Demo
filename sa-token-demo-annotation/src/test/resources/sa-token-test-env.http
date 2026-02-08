@@ -1,0 +1,174 @@
+### ============================================
+### Sa-Token 注解鉴权演示 - 自动化测试
+### 使用环境变量自动管理 Token
+### ============================================
+
+### ==========================================
+### 第一步：登录并获取 Token
+### ==========================================
+
+### 1.1 普通用户登录
+# @name loginNeo
+GET http://localhost:8083/auth/login?username=neo
+
+### 1.2 管理员登录
+# @name loginAdmin
+GET http://localhost:8083/auth/loginAdmin
+
+### 1.3 普通用户登录（部分权限）
+# @name loginUser
+GET http://localhost:8083/auth/loginUser
+
+### 1.4 超级管理员登录
+# @name loginSuperAdmin
+GET http://localhost:8083/auth/loginSuperAdmin
+
+### ==========================================
+### 第二步：使用获取的 Token 进行测试
+### ==========================================
+
+### 获取用户信息
+GET http://localhost:8083/auth/getInfo
+satoken: {{loginAdmin.response.body.data.token}}
+
+### 开启二级认证
+GET http://localhost:8083/auth/openSafe
+satoken: {{loginAdmin.response.body.data.token}}
+
+### 检查二级认证状态
+GET http://localhost:8083/auth/checkSafe
+satoken: {{loginAdmin.response.body.data.token}}
+
+### 修改密码（需要二级认证）
+GET http://localhost:8083/basic/updatePwd
+satoken: {{loginAdmin.response.body.data.token}}
+
+### 添加用户（需要 user.add 权限）
+GET http://localhost:8083/basic/addUser
+satoken: {{loginUser.response.body.data.token}}
+
+### 用户添加（需要 user-add 权限）
+GET http://localhost:8083/basic/userAdd
+satoken: {{loginUser.response.body.data.token}}
+
+### 超级管理员专属接口（需要 super-admin 角色）
+GET http://localhost:8083/basic/add
+satoken: {{loginSuperAdmin.response.body.data.token}}
+
+### 管理员专属接口
+GET http://localhost:8083/role/adminOnly
+satoken: {{loginAdmin.response.body.data.token}}
+
+### 组合注解 - 健康检查（无需登录）
+GET http://localhost:8083/combined/health
+
+### 组合注解 - 正常接口（需要登录）
+GET http://localhost:8083/combined/normal
+satoken: {{loginNeo.response.body.data.token}}
+
+### 组合注解 - 管理员专属
+GET http://localhost:8083/combined/adminOnly
+satoken: {{loginAdmin.response.body.data.token}}
+
+### ==========================================
+### 第三步：权限测试场景
+### ==========================================
+
+### 场景1：管理员访问所有接口
+# @name adminLogin
+GET http://localhost:8083/auth/loginAdmin
+
+###
+GET http://localhost:8083/basic/userAdd
+satoken: {{adminLogin.response.body.data.token}}
+
+###
+GET http://localhost:8083/basic/add
+satoken: {{adminLogin.response.body.data.token}}
+
+### 场景2：普通用户访问受限接口（预期失败）
+# @name userLogin
+GET http://localhost:8083/auth/loginUser
+
+###
+GET http://localhost:8083/basic/add
+satoken: {{userLogin.response.body.data.token}}
+
+### 场景3：超级管理员访问专属接口
+# @name superAdminLogin
+GET http://localhost:8083/auth/loginSuperAdmin
+
+###
+GET http://localhost:8083/basic/add
+satoken: {{superAdminLogin.response.body.data.token}}
+
+### ==========================================
+### 第四步：二级认证流程测试
+### ==========================================
+
+# @name loginForSafe
+GET http://localhost:8083/auth/loginAdmin
+
+### 4.1 未开启二级认证直接访问（预期失败）
+###
+GET http://localhost:8083/basic/updatePwd
+satoken: {{loginForSafe.response.body.data.token}}
+
+### 4.2 开启二级认证
+###
+GET http://localhost:8083/auth/openSafe
+satoken: {{loginForSafe.response.body.data.token}}
+
+### 4.3 开启后再次访问（预期成功）
+###
+GET http://localhost:8083/basic/updatePwd
+satoken: {{loginForSafe.response.body.data.token}}
+
+### 4.4 关闭二级认证
+###
+GET http://localhost:8083/auth/closeSafe
+satoken: {{loginForSafe.response.body.data.token}}
+
+### ==========================================
+### 第五步：服务封禁测试
+### ==========================================
+
+# @name loginForDisable
+GET http://localhost:8083/auth/loginAdmin
+
+### 5.1 封禁 comm 服务
+###
+GET http://localhost:8083/auth/disableService?service=comm
+satoken: {{loginForDisable.response.body.data.token}}
+
+### 5.2 检查服务封禁状态
+###
+GET http://localhost:8083/auth/checkDisable?service=comm
+satoken: {{loginForDisable.response.body.data.token}}
+
+### 5.3 解封服务
+###
+GET http://localhost:8083/auth/untieDisableService?service=comm
+satoken: {{loginForDisable.response.body.data.token}}
+
+### 5.4 再次检查封禁状态
+###
+GET http://localhost:8083/auth/checkDisable?service=comm
+satoken: {{loginForDisable.response.body.data.token}}
+
+### ==========================================
+### 第六步：登出
+### ==========================================
+
+###
+GET http://localhost:8083/auth/logout
+satoken: {{loginAdmin.response.body.data.token}}
+
+### ==========================================
+### 使用说明
+### ==========================================
+# 1. 所有请求可以独立运行
+# 2. 请求之间通过 {{变量名}} 引用前面请求的结果
+# 3. 点击请求序号旁边的绿色运行按钮执行单个请求
+# 4. 点击文件顶部的"运行所有"按钮可执行整个文件
+# 5. 请求结果会显示在右侧的"Run"窗口中
