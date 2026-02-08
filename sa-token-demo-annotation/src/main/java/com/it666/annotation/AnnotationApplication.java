@@ -18,7 +18,7 @@ public class AnnotationApplication {
     public static void main(String[] args) {
         SpringApplication.run(AnnotationApplication.class, args);
         log.info("""
-                ==========================================
+                // ==========================================
                   Sa-Token 注解鉴权演示启动成功！
                   访问 http://localhost:8083 测试接口
                 ==========================================

@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
  * Sa-Token 组合注解演示控制器
  * <p>
  * 演示：
- * - @SaIgnore：忽略校验（白名单）
- * - @SaCheckOr：最灵活的组合校验（满足任意条件即可）
- * - 类级别注解 + 方法级别 @SaIgnore
+ * - {@code @SaIgnore}：忽略校验（白名单）
+ * - {@code @SaCheckOr}：最灵活的组合校验（满足任意条件即可）
+ * - 类级别注解 + 方法级别 {@code @SaIgnore}
  *
  * @author 程序员NEO
  */
@@ -27,13 +27,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class CombinedAnnotationController {
 
     /**
-     * @SaIgnore 白名单示例
+     * {@code @SaIgnore} 白名单示例
      * <p>
-     * 虽然 Controller 类上加了 @SaCheckLogin，但这个方法可以不登录访问
+     * 虽然 Controller 类上加了 {@code @SaCheckLogin}，但这个方法可以不登录访问
      * <p>
      * 适用场景：健康检查、公开查询、获取接口文档等
      * <p>
-     * 注意：@SaIgnore 优先级最高，即使同时写了 @SaCheckLogin 和 @SaIgnore，结果也是不鉴权
+     * 注意：{@code @SaIgnore} 优先级最高，即使同时写了 {@code @SaCheckLogin} 和 {@code @SaIgnore}，结果也是不鉴权
      */
     @SaIgnore
     @RequestMapping("/health")
@@ -50,7 +50,7 @@ public class CombinedAnnotationController {
     }
 
     /**
-     * @SaCheckOr 组合校验示例
+     * {@code @SaCheckOr} 组合校验示例
      * <p>
      * 满足以下任意一个条件即可访问（OR 逻辑）：
      * - 已登录
@@ -98,7 +98,7 @@ public class CombinedAnnotationController {
      * - 已登录（Controller 类级别）
      * - 具有 admin 角色
      * <p>
-     * 这是 AND 逻辑，与 @SaCheckOr 的 OR 逻辑形成对比
+     * 这是 AND 逻辑，与 {@code @SaCheckOr} 的 OR 逻辑形成对比
      */
     @SaCheckRole("admin")
     @RequestMapping("/adminOnly")
@@ -115,7 +115,7 @@ public class CombinedAnnotationController {
      */
     @SaCheckSafe
     @RequestMapping("/changePassword")
-    public SaResult changePassword(String oldPassword, String newPassword) {
+    public SaResult changePassword() {
         // 实际的修改密码逻辑...
         return SaResult.data("密码修改成功");
     }

@@ -30,7 +30,7 @@ public class AuthController {
      */
     @RequestMapping("/login")
     public SaResult login(@RequestParam(defaultValue = "user") String username) {
-        // 模拟登录，实际项目应该验证用户名密码
+        // 模拟登录，实际项目应该验证用户名密
         StpUtil.login(username);
         return SaResult.data("登录成功，用户：" + username + "，Token：" + StpUtil.getTokenValue());
     }
