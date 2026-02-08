@@ -151,7 +151,7 @@ public class AuthController {
         // 封禁当前用户的指定服务，永久封禁（-1表示永久）
         // 注意：Sa-Token 1.44.0 版本中，disable 方法需要指定 loginId 和服务类型及时长
         // 这里简化演示，实际使用需要根据具体业务调整
-        long loginId = StpUtil.getLoginIdAsLong();
+        Object loginId = StpUtil.getLoginId();
         StpUtil.disable(loginId, service, -1);
         return SaResult.data("已封禁服务：" + service);
     }
