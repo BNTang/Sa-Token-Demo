@@ -1,0 +1,180 @@
+### Sa-Token 拦断器路由鉴权测试文件
+
+### 1. 用户登录测试
+### 使用 user 账号登录（只有 user 权限）
+POST http://localhost:8083/auth/doLogin
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "123456"
+}
+
+### 使用 admin 账号登录（有 admin 角色和 admin/user/goods/orders 权限）
+POST http://localhost:8083/auth/doLogin
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "123456"
+}
+
+### 使用 super-admin 账号登录（有 super-admin 角色和所有权限）
+POST http://localhost:8083/auth/doLogin
+Content-Type: application/json
+
+{
+  "username": "super-admin",
+  "password": "123456"
+}
+
+### 使用 goods-admin 账号登录（有 admin 角色但只有 goods 权限）
+POST http://localhost:8083/auth/doLogin
+Content-Type: application/json
+
+{
+  "username": "goods-admin",
+  "password": "123456"
+}
+
+### ======== 测试 user 账号（只有 user 权限） ========
+
+### 2. 访问用户模块 - 成功（user 有 user 权限）
+GET http://localhost:8083/user/list
+satoken: YOUR_USER_TOKEN_HERE
+
+### 3. 访问管理员模块 - 失败（user 没有 admin 角色）
+GET http://localhost:8083/admin/dashboard
+satoken: YOUR_USER_TOKEN_HERE
+
+### 4. 访问商品模块 - 失败（user 没有 goods 权限）
+GET http://localhost:8083/goods/list
+satoken: YOUR_USER_TOKEN_HERE
+
+### 5. 访问订单模块 - 失败（user 没有 orders 权限）
+GET http://localhost:8083/orders/list
+satoken: YOUR_USER_TOKEN_HERE
+
+### ======== 测试 admin 账号（有 admin 角色和 admin/user/goods/orders 权限） ========
+
+### 6. 访问用户模块 - 成功（admin 有 user 权限）
+GET http://localhost:8083/user/list
+satoken: YOUR_ADMIN_TOKEN_HERE
+
+### 7. 访问管理员模块 - 成功（admin 有 admin 角色）
+GET http://localhost:8083/admin/dashboard
+satoken: YOUR_ADMIN_TOKEN_HERE
+
+### 8. 访问系统设置 - 成功（admin 有 admin 权限）
+GET http://localhost:8083/admin/settings
+satoken: YOUR_ADMIN_TOKEN_HERE
+
+### 9. 访问商品模块 - 成功（admin 有 goods 权限）
+GET http://localhost:8083/goods/list
+satoken: YOUR_ADMIN_TOKEN_HERE
+
+### 10. 访问订单模块 - 成功（admin 有 orders 权限）
+GET http://localhost:8083/orders/list
+satoken: YOUR_ADMIN_TOKEN_HERE
+
+### 11. 访问通知模块 - 失败（admin 没有 notice 权限）
+GET http://localhost:8083/notice/list
+satoken: YOUR_ADMIN_TOKEN_HERE
+
+### ======== 测试 goods-admin 账号（有 admin 角色但只有 goods 权限） ========
+
+### 12. 访问管理员模块 - 失败（goods-admin 有 admin 角色但没有 admin 权限）
+GET http://localhost:8083/admin/dashboard
+satoken: YOUR_GOODS_ADMIN_TOKEN_HERE
+
+### 13. 访问商品模块 - 成功（goods-admin 有 goods 权限）
+GET http://localhost:8083/goods/list
+satoken: YOUR_GOODS_ADMIN_TOKEN_HERE
+
+### ======== 测试未登录访问 ========
+
+### 14. 未登录访问需要权限的接口 - 失败
+GET http://localhost:8083/user/list
+
+### ======== 测试公开接口（不需要登录） ========
+
+### 15. 访问登录接口 - 成功（公开接口）
+POST http://localhost:8083/auth/doLogin
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "123456"
+}
+
+### ======== 测试获取当前用户信息 ========
+
+### 16. 获取当前登录用户信息
+GET http://localhost:8083/auth/userInfo
+satoken: YOUR_TOKEN_HERE
+
+### ======== 测试退出登录 ========
+
+### 17. 退出登录
+POST http://localhost:8083/auth/logout
+satoken: YOUR_TOKEN_HERE
+
+### ======== 测试完整的商品模块 CRUD ========
+
+### 18. 获取商品列表
+GET http://localhost:8083/goods/list
+satoken: YOUR_ADMIN_TOKEN_HERE
+
+### 19. 获取商品详情
+GET http://localhost:8083/goods/info/G001
+satoken: YOUR_ADMIN_TOKEN_HERE
+
+### 20. 添加商品
+POST http://localhost:8083/goods/add
+satoken: YOUR_ADMIN_TOKEN_HERE
+
+### 21. 更新商品
+PUT http://localhost:8083/goods/update
+satoken: YOUR_ADMIN_TOKEN_HERE
+
+### 22. 删除商品
+DELETE http://localhost:8083/goods/delete/G001
+satoken: YOUR_ADMIN_TOKEN_HERE
+
+### ======== 测试订单模块 ========
+
+### 23. 获取订单列表
+GET http://localhost:8083/orders/list
+satoken: YOUR_ADMIN_TOKEN_HERE
+
+### 24. 创建订单
+POST http://localhost:8083/orders/create
+satoken: YOUR_ADMIN_TOKEN_HERE
+
+### ======== 测试 super-admin 账号（有所有权限） ========
+
+### 25. super-admin 访问所有模块都应该成功
+
+### 访问用户模块
+GET http://localhost:8083/user/list
+satoken: YOUR_SUPER_ADMIN_TOKEN_HERE
+
+### 访问管理员模块
+GET http://localhost:8083/admin/dashboard
+satoken: YOUR_SUPER_ADMIN_TOKEN_HERE
+
+### 访问商品模块
+GET http://localhost:8083/goods/list
+satoken: YOUR_SUPER_ADMIN_TOKEN_HERE
+
+### 访问订单模块
+GET http://localhost:8083/orders/list
+satoken: YOUR_SUPER_ADMIN_TOKEN_HERE
+
+### 访问通知模块
+GET http://localhost:8083/notice/list
+satoken: YOUR_SUPER_ADMIN_TOKEN_HERE
+
+### 访问评论模块
+GET http://localhost:8083/comment/list
+satoken: YOUR_SUPER_ADMIN_TOKEN_HERE
