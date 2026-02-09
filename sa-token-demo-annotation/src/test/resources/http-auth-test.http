@@ -1,0 +1,166 @@
+### ============================================
+### Sa-Token HTTP 认证测试指南
+### HttpBasic 和 HttpDigest 认证
+### ============================================
+
+### ==========================================
+### 1. HttpBasic 认证测试
+### ==========================================
+
+### 1.1 使用浏览器测试（推荐）⭐
+# 直接在浏览器访问：
+# http://localhost:8083/basic/dashboard
+#
+# 浏览器会弹出登录框：
+#   用户名: sa
+#   密码: 123456
+
+### 1.2 使用 HTTP Client 测试
+# 方法1：直接在 URL 中添加认证信息
+GET http://sa:123456@localhost:8083/basic/dashboard
+
+# 方法2：使用 Authorization 头
+# 需要将 "sa:123456" 进行 Base64 编码
+# 编码结果：c2E6MTIzNDU2
+GET http://localhost:8083/basic/dashboard
+Authorization: Basic c2E6MTIzNDU2
+
+### ==========================================
+### 2. HttpDigest 认证测试
+### ==========================================
+
+### 2.1 使用浏览器测试（最简单）⭐⭐
+# 直接在浏览器访问：
+# http://localhost:8083/basic/report
+#
+# 浏览器会弹出登录框：
+#   用户名: sa
+#   密码: 123456
+#
+# 注意：HttpDigest 认证更安全，浏览器会自动处理认证流程
+
+### 2.2 使用 HTTP Client 测试（复杂）
+# HttpDigest 认证需要多步握手，建议使用浏览器或 Postman
+
+### ==========================================
+### 3. Base64 编码快速生成
+### ==========================================
+
+### 3.1 使用在线工具
+# 访问：https://www.base64encode.org/
+# 输入：sa:123456
+# 编码结果：c2E6MTIzNDU2
+
+### 3.2 使用命令行生成
+# Windows PowerShell:
+# [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("sa:123456"))
+#
+# Linux/Mac:
+# echo -n "sa:123456" | base64
+
+### ==========================================
+### 4. Postman 测试方法
+### ==========================================
+
+### 4.1 HttpBasic 认证
+# 1. 创建新请求：GET http://localhost:8083/basic/dashboard
+# 2. 选择 Authorization 标签
+# 3. Type 选择 "Basic Auth"
+# 4. Username: sa
+# 5. Password: 123456
+# 6. 点击 Send
+
+### 4.2 HttpDigest 认证
+# 1. 创建新请求：GET http://localhost:8083/basic/report
+# 2. 选择 Authorization 标签
+# 3. Type 选择 "Digest Auth"
+# 4. Username: sa
+# 5. Password: 123456
+# 6. 点击 Send
+# 注意：第一次请求可能失败，Postman 会自动处理认证重试
+
+### ==========================================
+### 5. curl 命令测试
+### ==========================================
+
+### 5.1 HttpBasic 认证
+curl -u sa:123456 http://localhost:8083/basic/dashboard
+
+# 或者使用完整 URL
+curl http://sa:123456@localhost:8083/basic/dashboard
+
+### 5.2 HttpDigest 认证
+curl --digest -u sa:123456 http://localhost:8083/basic/report
+
+### ==========================================
+### 6. 预期响应
+### ==========================================
+
+### HttpBasic 成功响应：
+# {
+#   "code": 200,
+#   "msg": "ok",
+#   "data": "管理后台数据"
+# }
+
+### HttpDigest 成功响应：
+# {
+#   "code": 200,
+#   "msg": "ok",
+#   "data": "报表数据"
+# }
+
+### 认证失败响应：
+# 401 Unauthorized 或弹出登录框
+
+### ==========================================
+### 7. 测试技巧
+### ==========================================
+
+### 技巧1：使用浏览器隐身模式测试
+# 可以清除缓存，每次都需要重新登录
+
+### 技巧2：使用浏览器开发者工具
+# 1. 打开开发者工具 (F12)
+# 2. 切换到 Network 标签
+# 3. 访问接口
+# 4. 查看请求头中的 Authorization 字段
+
+### 技巧3：保存密码到浏览器
+# 第一次输入后，浏览器会记住密码
+# 后续访问会自动带上认证信息
+
+### ==========================================
+### 8. 常见问题
+### ==========================================
+
+### Q1: 为什么不能用普通的 satoken 认证？
+# A: HttpBasic 和 HttpDigest 是标准的 HTTP 认证协议，
+#    不需要先登录获取 token，直接在请求头中携带认证信息
+
+### Q2: 什么场景使用 HttpBasic？
+# A: 适合内部管理系统、API 网关、简单认证场景
+
+### Q3: 什么场景使用 HttpDigest？
+# A: 比Basic更安全，密码不会明文传输，
+#    适合对安全性要求较高的场景
+
+### Q4: IntelliJ IDEA HTTP Client 支持 HttpDigest 吗？
+# A: 支持有限，建议使用浏览器或 Postman 测试
+
+### ==========================================
+### 9. 推荐测试方式（按优先级）
+### ==========================================
+
+# 🥇 第一推荐：浏览器（最简单）
+#    http://localhost:8083/basic/dashboard
+#    http://localhost:8083/basic/report
+
+# 🥈 第二推荐：Postman（功能强大）
+#    可视化配置认证信息
+
+# 🥉 第三推荐：curl（脚本自动化）
+#    适合批量测试和集成测试
+
+# 💡 IDEA HTTP Client
+#    适合测试 HttpBasic，不太适合 HttpDigest
