@@ -1,8 +1,0 @@
-{
-  "java.compile.nullAnalysis.mode": "automatic",
-  "java.configuration.updateBuildConfiguration": "interactive",
-  "github.copilot.chat.commitMessageGeneration.instructions": [
-    { "text": "Write commit messages in Chinese." },
-    { "text": "使用 Conventional Commits 规范，例如：feat: 、fix: 等。" }
-  ]
-}
