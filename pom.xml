@@ -16,6 +16,7 @@
         <module>sa-token-demo-kickout</module>
         <module>sa-token-demo-annotation</module>
         <module>sa-token-demo-interceptor</module>
+        <module>sa-token-demo-session</module>
     </modules>
 
     <properties>
