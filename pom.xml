@@ -17,6 +17,7 @@
         <module>sa-token-demo-annotation</module>
         <module>sa-token-demo-interceptor</module>
         <module>sa-token-demo-session</module>
+        <module>sa-token-demo-redis</module>
     </modules>
 
     <properties>

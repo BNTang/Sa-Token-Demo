@@ -1,0 +1,5 @@
+server:
+  port: 8092
+
+demo:
+  node-id: node-b

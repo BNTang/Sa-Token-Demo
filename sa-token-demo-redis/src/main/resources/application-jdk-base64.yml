@@ -1,0 +1,2 @@
+demo:
+  serializer: jdk-base64

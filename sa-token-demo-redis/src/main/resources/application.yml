@@ -1,0 +1,31 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: sa-token-demo-redis
+  redis:
+    database: 1
+    host: 127.0.0.1
+    port: 6379
+    timeout: 10s
+    lettuce:
+      pool:
+        max-active: 200
+        max-wait: -1ms
+        max-idle: 10
+        min-idle: 0
+
+sa-token:
+  token-name: satoken
+  timeout: 2592000
+  active-timeout: -1
+  is-concurrent: true
+  is-share: false
+  token-style: uuid
+  is-log: true
+
+demo:
+  node-id: ${spring.application.name}:${server.port}
+  storage-mode: auto
+  serializer: json
