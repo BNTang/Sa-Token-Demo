@@ -18,6 +18,7 @@
         <module>sa-token-demo-interceptor</module>
         <module>sa-token-demo-session</module>
         <module>sa-token-demo-redis</module>
+        <module>sa-token-demo-no-cookie</module>
     </modules>
 
     <properties>
