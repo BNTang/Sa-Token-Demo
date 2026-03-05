@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sa-Token No-Cookie Demo</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            max-width: 760px;
+            margin: 24px auto;
+            padding: 0 12px;
+            line-height: 1.5;
+        }
+        .card {
+            border: 1px solid #d0d7de;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-top: 4px;
+        }
+        button {
+            margin-right: 8px;
+            margin-top: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        pre {
+            background: #f6f8fa;
+            padding: 12px;
+            border-radius: 6px;
+            overflow: auto;
+        }
+        .hint {
+            color: #57606a;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<h1>Sa-Token No-Cookie Demo</h1>
+<p class="hint">
+    This page stores <code>tokenName</code> and <code>tokenValue</code> in localStorage
+    and injects the token into every request header.
+</p>
+
+<div class="card">
+    <label>
+        API Base URL
+        <input id="apiBase" value="http://127.0.0.1:8086">
+    </label>
+    <button id="saveBase">Save API Base</button>
+</div>
+
+<div class="card">
+    <h2>Login</h2>
+    <label>
+        Username
+        <input id="username" value="neo">
+    </label>
+    <label>
+        Password
+        <input id="password" value="123456" type="password">
+    </label>
+    <button id="loginBtn">POST /user/doLogin</button>
+    <button id="infoBtn">GET /user/info</button>
+    <button id="logoutBtn">POST /user/logout</button>
+</div>
+
+<div class="card">
+    <h2>Current Token</h2>
+    <pre id="tokenArea"></pre>
+</div>
+
+<div class="card">
+    <h2>Last Response</h2>
+    <pre id="resultArea"></pre>
+</div>
+
+<script>
+    const apiBaseInput = document.getElementById("apiBase");
+    const tokenArea = document.getElementById("tokenArea");
+    const resultArea = document.getElementById("resultArea");
+
+    const savedBase = localStorage.getItem("apiBase");
+    if (savedBase) {
+        apiBaseInput.value = savedBase;
+    }
+
+    function setResult(title, payload) {
+        resultArea.textContent = title + "\n" + JSON.stringify(payload, null, 2);
+    }
+
+    function refreshTokenArea() {
+        tokenArea.textContent = JSON.stringify({
+            tokenName: localStorage.getItem("tokenName"),
+            tokenValue: localStorage.getItem("tokenValue")
+        }, null, 2);
+    }
+
+    async function apiFetch(path, options) {
+        const tokenName = localStorage.getItem("tokenName") || "satoken";
+        const tokenValue = localStorage.getItem("tokenValue");
+
+        const headers = new Headers((options && options.headers) || {});
+        if (!headers.has("Content-Type")) {
+            headers.set("Content-Type", "application/json");
+        }
+        if (tokenValue) {
+            headers.set(tokenName, tokenValue);
+        }
+
+        const apiBase = (localStorage.getItem("apiBase") || apiBaseInput.value || "").replace(/\/$/, "");
+        const response = await fetch(apiBase + path, {
+            ...options,
+            headers
+        });
+
+        let data = null;
+        try {
+            data = await response.json();
+        } catch (e) {
+            data = { raw: "non-json response" };
+        }
+
+        return {
+            status: response.status,
+            data
+        };
+    }
+
+    document.getElementById("saveBase").addEventListener("click", () => {
+        localStorage.setItem("apiBase", apiBaseInput.value.trim());
+        setResult("Saved API base", { apiBase: localStorage.getItem("apiBase") });
+    });
+
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+
+        const result = await apiFetch("/user/doLogin", {
+            method: "POST",
+            body: JSON.stringify({ username, password })
+        });
+
+        if (result.status === 200 && result.data && result.data.data) {
+            const payload = result.data.data;
+            if (payload.tokenName && payload.tokenValue) {
+                localStorage.setItem("tokenName", payload.tokenName);
+                localStorage.setItem("tokenValue", payload.tokenValue);
+            }
+        }
+
+        refreshTokenArea();
+        setResult("Login result", result);
+    });
+
+    document.getElementById("infoBtn").addEventListener("click", async () => {
+        const result = await apiFetch("/user/info", { method: "GET" });
+        setResult("User info result", result);
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+        const result = await apiFetch("/user/logout", { method: "POST" });
+        localStorage.removeItem("tokenValue");
+        refreshTokenArea();
+        setResult("Logout result", result);
+    });
+
+    refreshTokenArea();
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: sa-token-demo-no-cookie
+
+sa-token:
+  token-name: satoken
+  timeout: 2592000
+  is-read-header: true
+  is-read-cookie: false
+  is-log: true
+
