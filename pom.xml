@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Sa-Token-Demo</name>
-    <description>Sa-Token 功能演示项目</description>
+    <description>Sa-Token 鍔熻兘婕旂ず椤圭洰</description>
 
     <modules>
         <module>sa-token-demo-springboot</module>
@@ -19,6 +19,7 @@
         <module>sa-token-demo-session</module>
         <module>sa-token-demo-redis</module>
         <module>sa-token-demo-no-cookie</module>
+        <module>sa-token-demo-prefix-style</module>
     </modules>
 
     <properties>
@@ -54,3 +55,4 @@
     </build>
 
 </project>
+
